@@ -1,0 +1,288 @@
+.runners:
+  tags:
+    - docker-dev1
+
+default:
+  image: public.ecr.aws/docker/library/node:18-alpine
+
+variables:
+  PORT_NGINX: 7991
+  MODE_BUILD: development
+  MODE_DEPLOY: DEVELOPMENT
+  PROJECT_NAME: "Nurtureware CMS"
+
+stages:
+  - install-deps
+  - code-quality
+  - check-building
+  - build-docker-image
+  - deploy-development
+  - build-staging
+  - deploy-staging
+  - deploy-production
+  - notify
+
+# Caches
+.node_modules-cache: &node_modules-cache
+  key:
+    files:
+      - package-lock.json
+  paths:
+    - node_modules
+  policy: pull
+
+.npm-cache: &npm-cache
+  key: npm-$CI_JOB_IMAGE
+  paths:
+    - .npm
+
+.build-cache: &build-cache
+  key: build-$CI_JOB_IMAGE
+  paths:
+    - .cache
+    - public
+  policy: pull-push
+
+before_script:
+  - |
+    # docker variables for name and tag of new image
+    export DOCKER_TAG="${CI_COMMIT_SHA:0:8}"
+    export DOCKER_REPO="$CI_REGISTRY_IMAGE"
+    export DOCKER_IMAGE="${DOCKER_REPO}:${DOCKER_TAG}"
+    export DOCKER_CACHE_IMAGE="${DOCKER_REPO}:${CI_COMMIT_REF_NAME}"
+
+# Jobs
+Install Dependencies:
+  extends:
+    - .runners
+  stage: install-deps
+  script:
+    - npm set cache .npm
+    - npm ci
+  cache:
+    - <<: *node_modules-cache
+      policy: pull-push # We override the policy
+    - <<: *npm-cache # This is not required if your internet speed is good or if you use a local npm registry.
+  only:
+    - merge_requests
+
+code-quality:
+  extends:
+    - .runners
+  stage: code-quality
+  script:
+    - echo "Code quality check ..."
+    - npm run lint
+    - echo "Code quality check complete!"
+  cache:
+    - <<: *node_modules-cache
+    - <<: *build-cache
+  artifacts:
+    paths:
+      - public
+  only:
+    - merge_requests
+
+check-building:
+  extends:
+    - .runners
+  stage: check-building
+  script:
+    - echo "Code check building ..."
+    - npm run build:${MODE_BUILD}
+    - echo "Code check build complete!"
+  cache:
+    - <<: *node_modules-cache
+    - <<: *build-cache
+  artifacts:
+    paths:
+      - public
+  only:
+    - merge_requests
+
+build-docker-image:
+  image: public.ecr.aws/docker/library/docker:stable
+  extends:
+    - .runners
+  services:
+    - public.ecr.aws/docker/library/docker:dind
+  stage: build-docker-image
+  rules:
+    - if:
+        $CI_COMMIT_BRANCH == "develop" && $CI_COMMIT_REF_NAME == "develop" && $CI_PIPELINE_SOURCE ==
+        "push"
+      variables:
+        MODE_BUILD: "development"
+    - if:
+        $CI_COMMIT_BRANCH == "staging" && $CI_COMMIT_REF_NAME == "staging" && $CI_PIPELINE_SOURCE ==
+        "push"
+      variables:
+        MODE_BUILD: "staging"
+    - if:
+        $CI_COMMIT_BRANCH == "production" && $CI_COMMIT_REF_NAME == "production" &&
+        $CI_PIPELINE_SOURCE == "push"
+      variables:
+        MODE_BUILD: "production"
+      when: always
+  script:
+    - echo "Building Docker image ..."
+    - echo -n $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin
+      $CI_REGISTRY
+    - docker pull "$DOCKER_CACHE_IMAGE" || docker pull "${DOCKER_REPO}:${MODE_BUILD}" || true # allow failure
+    - docker pull "$DOCKER_IMAGE" || true # allow failure
+    - docker build --pull --cache-from "$DOCKER_IMAGE" --cache-from "$DOCKER_CACHE_IMAGE"
+      --cache-from "${DOCKER_REPO}:${MODE_BUILD}" --build-arg ENVIRONMENT="${MODE_BUILD}" -t
+      "$DOCKER_IMAGE" .
+    - docker push "$DOCKER_IMAGE"
+    - docker tag "$DOCKER_IMAGE" "$DOCKER_CACHE_IMAGE"
+    - docker push "$DOCKER_CACHE_IMAGE"
+    - echo "Build Docker image successfully!"
+
+deploy-development:
+  image: python:latest
+  tags:
+    - docker-2
+  stage: deploy-development
+  script:
+    - echo "Repairing auth to server ..."
+    - eval $(ssh-agent -s)
+    - echo "$DEVELOP_SSH_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - echo "Repair auth to server complete!"
+    - echo "Deploying docker image to server ..."
+    - ssh -o StrictHostKeyChecking=no $DEVELOP_SSH_USER@$DEVELOP_HOST "docker login -u
+      ${CI_DEPLOY_USER} -p ${CI_DEPLOY_PASSWORD} ${CI_REGISTRY}"
+    - ssh -o StrictHostKeyChecking=no $DEVELOP_SSH_USER@$DEVELOP_HOST "docker rm -f
+      ${CI_PROJECT_NAME} || true"
+    - ssh -o StrictHostKeyChecking=no $DEVELOP_SSH_USER@$DEVELOP_HOST "docker rmi \$(docker images
+      -q ${DOCKER_REPO}) || true"
+    - ssh -o StrictHostKeyChecking=no $DEVELOP_SSH_USER@$DEVELOP_HOST "docker run
+      --name=${CI_PROJECT_NAME} --restart=always -v /app/storage:/src/storage -p ${PORT_NGINX}:8080
+      -d ${DOCKER_IMAGE}"
+    - echo "Deploy docker image complete!"
+  only:
+    - develop
+
+build-staging:
+  extends:
+    - .runners
+  stage: build-staging
+  script:
+    - echo "Building deploy package"
+    - npm ci
+    - npm run build:staging
+    - echo "Build successful"
+  artifacts:
+    paths:
+      - ./dist
+  only:
+    - staging
+
+deploy-staging:
+  image: python:latest
+  tags:
+    - docker-2
+  stage: deploy-staging
+  script:
+    - echo "Repairing auth to server ..."
+    - pip install awscli
+
+    - aws configure set region $AWS_REGION;
+    - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID;
+    - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY;
+
+    - aws s3 rm s3://$S3_BUCKET_NAME/ --recursive;
+    - aws s3 cp ./dist/ s3://$S3_BUCKET_NAME/ --recursive --exclude ".DS_Store"
+
+    - aws configure set preview.cloudfront true;
+    - aws configure set preview.create-invalidation true;
+    - aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_ID --paths "/*";
+
+    - echo "Deploy staging to AWS complete!"
+  only:
+    - staging
+
+deploy-production:
+  stage: deploy-production
+  environment: production
+  script:
+    - echo "Deploying to production server ..."
+  only:
+    - master
+
+notify_on_build_failure:
+  stage: notify
+  when: on_failure
+  allow_failure: true
+  rules:
+    - if:
+        $CI_COMMIT_BRANCH == "develop" && $CI_COMMIT_REF_NAME == "develop" && $CI_PIPELINE_SOURCE ==
+        "push"
+      variables:
+        MODE_BUILD: "development"
+    - if:
+        $CI_COMMIT_BRANCH == "staging" && $CI_COMMIT_REF_NAME == "staging" && $CI_PIPELINE_SOURCE ==
+        "push"
+      variables:
+        MODE_BUILD: "staging"
+    - if:
+        $CI_COMMIT_BRANCH == "production" && $CI_COMMIT_REF_NAME == "production" &&
+        $CI_PIPELINE_SOURCE == "push"
+      variables:
+        MODE_BUILD: "production"
+      when: always
+  before_script:
+    - apk update
+    - apk add jq
+    - apk add curl
+  script:
+    - echo "Sending notification to Slack ..."
+    - DEPLOYMENT_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+    - VERSION=$(jq -r .version package.json)
+    - CI_JOB_STATUS_UPPER="FAILED"
+    - EMOJI_STATUS=":exclamation:"
+    - 'curl -X POST -H "Content-type: application/json" --data "{\"text\": \"*Project:*
+      ${PROJECT_NAME} \n*App Version:* ${VERSION} \n*Job:* Deploy ${MODE_DEPLOY} \n*Stage:* Deploy
+      \n*User:* ${GITLAB_USER_NAME} \n*Deployment Date:* ${DEPLOYMENT_DATE} \n*Status:*
+      ${CI_JOB_STATUS_UPPER} ${EMOJI_STATUS} \n*Details:* <${CI_JOB_URL}|Job Details>\", \"mrkdwn\":
+      true}" ${SLACK_WEBHOOK}'
+    - echo "Notification sent!"
+
+notify_on_build_success:
+  stage: notify
+  when: on_success
+  allow_failure: true
+  rules:
+    - if:
+        $CI_COMMIT_BRANCH == "develop" && $CI_COMMIT_REF_NAME == "develop" && $CI_PIPELINE_SOURCE ==
+        "push"
+      variables:
+        MODE_DEPLOY: "DEVELOPMENT"
+    - if:
+        $CI_COMMIT_BRANCH == "staging" && $CI_COMMIT_REF_NAME == "staging" && $CI_PIPELINE_SOURCE ==
+        "push"
+      variables:
+        MODE_DEPLOY: "STAGING"
+    - if:
+        $CI_COMMIT_BRANCH == "production" && $CI_COMMIT_REF_NAME == "production" &&
+        $CI_PIPELINE_SOURCE == "push"
+      variables:
+        MODE_DEPLOY: "PRODUCTION"
+      when: always
+  before_script:
+    - apk update
+    - apk add jq
+    - apk add curl
+  script:
+    - echo "Sending notification to Slack ..."
+    - DEPLOYMENT_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+    - VERSION=$(jq -r .version package.json)
+    - CI_JOB_STATUS_UPPER="SUCCESS"
+    - EMOJI_STATUS=":white_check_mark:"
+    - 'curl -X POST -H "Content-type: application/json" --data "{\"text\": \"*Project:*
+      ${PROJECT_NAME} \n*App Version:* ${VERSION} \n*Job:* Deploy ${MODE_DEPLOY} \n*Stage:* Deploy
+      \n*User:* ${GITLAB_USER_NAME} \n*Deployment Date:* ${DEPLOYMENT_DATE} \n*Status:*
+      ${CI_JOB_STATUS_UPPER} ${EMOJI_STATUS} \n*Details:* <${CI_JOB_URL}|Job Details>\", \"mrkdwn\":
+      true}" ${SLACK_WEBHOOK}'
+    - echo "Notification sent!"

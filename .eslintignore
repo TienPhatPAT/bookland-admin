@@ -1,0 +1,11 @@
+node_modules
+artifacts
+cache
+coverage
+commitlint.config.js
+# .eslintrc.js
+.lintstagedrc.json
+bin/generate-version.js
+package-lock.json
+package.json
+vite.config.ts

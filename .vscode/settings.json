@@ -1,0 +1,14 @@
+{
+  "cSpell.words": [
+    "commitlint",
+    "ianvs",
+    "nurtureware",
+    "preinstall",
+    "tanstack",
+    "toastify"
+  ],
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit",
+  }
+}
