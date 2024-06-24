@@ -3,9 +3,10 @@ import { CONFIRM_MESSAGE, DELAY_SEARCH_TIME } from "@/constants";
 
 import { Breadcrumbs, Button, IconButton, Link, Stack, Tooltip } from "@mui/material";
 
-import { BookType, GetBookParams } from "@/models/book";
+import { GetBookParams } from "@/models/book";
 import { FilterValue, Metadata } from "@/models/common";
 import { IQueryString } from "@/models/query";
+import { UserType } from "@/models/user";
 import { formatDate } from "@/helpers/date";
 import { useDeleteCategory } from "@/hooks/category";
 import useDebounce from "@/hooks/common/useDebounce";
@@ -18,10 +19,10 @@ import Mainlayout from "@/components/layout/main-layout";
 import { theme } from "@/theme";
 import { DeleteIcon, EditIcon } from "@/assets/icons";
 
-import data from "../../../jsons/books.json";
+import data from "../../../jsons/users.json";
 import { filterOptions } from "./constant";
 
-const Books = () => {
+const Users = () => {
   const [queryParams, setQueryParams] = useState<GetBookParams>({
     page: 1,
     limit: 25,
@@ -30,7 +31,7 @@ const Books = () => {
   const { mutate: deleteContentBySlug } = useDeleteCategory();
 
   // Fix reload page when data undefined
-  const [dataBook, setDataBook] = useState<BookType[]>([]);
+  const [dataBook, setDataBook] = useState<UserType[]>([]);
   const [metaData, setDataMetadata] = useState<Metadata>({
     page: 1,
     limit: 25,
@@ -60,7 +61,7 @@ const Books = () => {
 
   const onEdit = (id: string) => {
     drawer.show({
-      title: "Update Book",
+      title: "Update User",
       body: <CreateBookDrawer isEdit idItem={id} />,
       buttonText: "Update",
     });
@@ -68,7 +69,7 @@ const Books = () => {
 
   const deleteCategory = (id: string) => {
     dialog.show({
-      title: "Delete Book ?",
+      title: "Delete User ?",
       description: CONFIRM_MESSAGE.CM1,
       color: theme.palette.red[500],
       callbackYes: () => {
@@ -114,7 +115,7 @@ const Books = () => {
           >
             <Breadcrumbs aria-label="breadcrumb">
               <Link underline="hover" color="inherit">
-                Books
+                Users
               </Link>
             </Breadcrumbs>
 
@@ -160,11 +161,11 @@ const Books = () => {
               <Datatable.ColTemplate>
                 <Datatable.HeadCell
                   sortable={true}
-                  name="id_sach"
+                  name="id_user"
                   text="ID"
                   sx={{ width: "200px" }}
                 ></Datatable.HeadCell>
-                <Datatable.BodyCell field="id_sach"></Datatable.BodyCell>
+                <Datatable.BodyCell field="id_user"></Datatable.BodyCell>
               </Datatable.ColTemplate>
               <Datatable.ColTemplate>
                 <Datatable.HeadCell
@@ -178,21 +179,21 @@ const Books = () => {
               <Datatable.ColTemplate>
                 <Datatable.HeadCell
                   sortable={true}
-                  name="language"
-                  text="Ngôn Ngữ"
+                  name="email"
+                  text="Email"
                   sx={{ width: "200px" }}
                 ></Datatable.HeadCell>
-                <Datatable.BodyCell field="language"></Datatable.BodyCell>
+                <Datatable.BodyCell field="email"></Datatable.BodyCell>
               </Datatable.ColTemplate>
               <Datatable.ColTemplate>
                 <Datatable.HeadCell
                   sortable={true}
-                  name="anh"
-                  text="Bìa Sách"
+                  name="loaitaikhoan"
+                  text="Loại"
                   sx={{ width: "200px" }}
                 ></Datatable.HeadCell>
                 <Datatable.BodyCell>
-                  {(data: BookType) => <img src={data.anh} alt={data.anh} height="30px" />}
+                  {(data: UserType) => <>{data.loaitaikhoan === 1 ? "Admin" : "User"}</>}
                 </Datatable.BodyCell>
               </Datatable.ColTemplate>
               {/* <Datatable.ColTemplate>
@@ -228,7 +229,7 @@ const Books = () => {
                   sx={{ width: "200px" }}
                 ></Datatable.HeadCell>
                 <Datatable.BodyCell>
-                  {(data: BookType) => <>{formatDate(data.ngayxuatban)}</>}
+                  {(data: UserType) => <>{formatDate(data.ngayxuatban)}</>}
                 </Datatable.BodyCell>
               </Datatable.ColTemplate>
               <Datatable.ColTemplate>
@@ -239,14 +240,14 @@ const Books = () => {
                   text="Action"
                 ></Datatable.HeadCell>
                 <Datatable.BodyCell>
-                  {(data: BookType) => (
+                  {(data: UserType) => (
                     //import data: Admin when handle onEditStaticContent/deleteStaticContent
                     <Stack flexDirection="row" alignItems="center" gap={0.5}>
                       <Tooltip title="Update" placement="top">
                         <span>
                           <IconButton
                             onClick={() => {
-                              onEdit(data.id_sach);
+                              onEdit(data.id_user);
                             }}
                           >
                             <EditIcon />
@@ -255,7 +256,7 @@ const Books = () => {
                       </Tooltip>
                       <Tooltip title="Delete" placement="top">
                         <span>
-                          <IconButton onClick={() => deleteCategory(data.id_sach)}>
+                          <IconButton onClick={() => deleteCategory(data.id_user)}>
                             <DeleteIcon />
                           </IconButton>
                         </span>
@@ -272,4 +273,4 @@ const Books = () => {
   );
 };
 
-export default Books;
+export default Users;

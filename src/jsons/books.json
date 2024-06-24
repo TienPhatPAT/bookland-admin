@@ -1,0 +1,46 @@
+{
+    "data": [
+        {
+		    "id_sach":"1",
+            "id_tacgia": "1",
+            "ten": "sach 1",
+            "nxb": "xyz",
+            "anh": "https://s3.ap-southeast-4.amazonaws.com/nurturewave-be-stg/uploads%2Fimages%2F93304762-1f87-4a06-8d9c-d5e2e5fa396e_Group+1+%284%29.png",
+            "mieuta": "activeactiveactiveactive activeactiveactive",
+            "language": "VN",
+            "ngayxuatban": "2024-06-06T03:13:20.170Z",
+            "ngaytao": "2024-06-06T03:13:20.170Z",
+            "isbn":"",
+            "page_count": 100,
+            "dexuat": true
+        },
+        {
+		    "id_sach":"2",
+            "id_tacgia": "1",
+            "ten": "sach 2",
+            "nxb": "xyz",
+            "anh": "https://s3.ap-southeast-4.amazonaws.com/nurturewave-be-stg/uploads%2Fimages%2F93304762-1f87-4a06-8d9c-d5e2e5fa396e_Group+1+%284%29.png",
+            "mieuta": "activeactiveactiveactive activeactiveactive",
+            "language": "VN",
+            "ngayxuatban": "2024-06-06T03:13:20.170Z",
+            "ngaytao": "2024-06-06T03:13:20.170Z",
+            "isbn":"",
+            "page_count": 100,
+            "dexuat": true
+        },
+        {
+		    "id_sach":"3",
+            "id_tacgia": "2",
+            "ten": "sach 3",
+            "nxb": "xyz",
+            "anh": "https://s3.ap-southeast-4.amazonaws.com/nurturewave-be-stg/uploads%2Fimages%2F93304762-1f87-4a06-8d9c-d5e2e5fa396e_Group+1+%284%29.png",
+            "mieuta": "activeactiveactiveactive activeactiveactive",
+            "language": "VN",
+            "ngayxuatban": "2024-06-06T03:13:20.170Z",
+            "ngaytao": "2024-06-06T03:13:20.170Z",
+            "isbn":"",
+            "page_count": 100,
+            "dexuat": true
+        }
+    ]
+}

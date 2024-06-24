@@ -2,7 +2,7 @@ import React from "react";
 
 import { APP_ROUTES } from "@/routers/routes";
 
-import { BookIcon } from "@/assets/icons";
+import { AccountsIcon, BookIcon } from "@/assets/icons";
 
 export interface IMenuItem {
   title: string;
@@ -24,6 +24,11 @@ export const Menus = () => [
         label: "Books",
         icon: <BookIcon />,
         path: APP_ROUTES.DASHBOARD.CATEGORY.to,
+      },
+      {
+        label: "Users",
+        icon: <AccountsIcon />,
+        path: APP_ROUTES.DASHBOARD.USER.to,
       },
     ],
   },

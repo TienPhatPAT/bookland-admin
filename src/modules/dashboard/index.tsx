@@ -1,21 +1,19 @@
 import { Navigate, RouteObject, useRoutes } from "react-router-dom";
 
-import { ERoleAccount } from "@/constants/auth";
-import RequireAuth from "@/routers/RequireAuth";
-import RequireRole from "@/routers/RequireRole";
 import { APP_ROUTES } from "@/routers/routes";
 
 import { DashboardLayout } from "@/components/layout";
 
 import Books from "./books";
+import Users from "./users";
 
 // create new page
 const configRoutes: RouteObject[] = [
   {
     element: (
-      <RequireAuth>
-        <DashboardLayout />
-      </RequireAuth>
+      // <RequireAuth>
+      <DashboardLayout />
+      // </RequireAuth>
     ),
     children: [
       {
@@ -25,10 +23,14 @@ const configRoutes: RouteObject[] = [
       {
         path: APP_ROUTES.DASHBOARD.CATEGORY.path,
         element: (
-          <RequireRole roles={[ERoleAccount.SUPPER_ADMIN, ERoleAccount.ADMIN]}>
-            <Books />
-          </RequireRole>
+          // <RequireRole roles={[ERoleAccount.SUPPER_ADMIN, ERoleAccount.ADMIN]}>
+          <Books />
+          // </RequireRole>
         ),
+      },
+      {
+        path: APP_ROUTES.DASHBOARD.USER.path,
+        element: <Users />,
       },
       {
         path: "*",

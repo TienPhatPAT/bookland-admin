@@ -9,6 +9,10 @@ export const APP_ROUTES = {
       path: "books/*",
       to: "books",
     },
+    USER: {
+      path: "users/*",
+      to: "users",
+    },
   },
   LOGIN: {
     path: "login/*",

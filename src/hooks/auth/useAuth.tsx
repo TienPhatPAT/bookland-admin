@@ -8,6 +8,7 @@ const useAuth = () => {
 
   const handleLogout = async () => {
     // await authApi.logout();
+    window.location.href = `/login`; //REMOVE WHEN DONE LOGIN API
     clearLS();
     setIsLoggedIn(false);
   };

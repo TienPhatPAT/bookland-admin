@@ -1,11 +1,11 @@
 import { CommonParams } from "./common";
 
-export interface BookType {
-  id_sach: string;
-  id_tacgia: string;
+export interface UserType {
+  id_user: string;
+  loaitaikhoan: number;
+  password: string;
+  email: string;
   ten: string;
-  nxb: string;
-  anh: string;
   mieuta: string;
   language: string;
   ngayxuatban: string;
@@ -15,11 +15,11 @@ export interface BookType {
   dexuat: boolean;
 }
 
-export interface GetBookParams extends CommonParams {
+export interface GetUserParams extends CommonParams {
   f_name?: string;
 }
 
-export interface PostBookRequest {
+export interface PostUserRequest {
   id?: string;
   title: string;
   name: string;

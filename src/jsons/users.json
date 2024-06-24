@@ -1,0 +1,19 @@
+{
+    "data": [
+        {
+            "id_user":"6c1b64c9-a682-4d4f-a846-5f9f73a89edd",
+            "loaitaikhoan": 2,
+            "password": "abc@123",
+            "email": "abc@gmail.com",
+            "ten": "phat",
+            "mieuta": "activeactiveactiveactive activeactiveactive",
+            "language": "VN",
+            "ngayxuatban": "2024-06-06T03:13:20.170Z",
+            "ngaytao": "2024-06-06T03:13:20.170Z",
+            "isbn":"",
+            "page_count": 100,
+            "dexuat": true
+
+        }
+    ]
+}

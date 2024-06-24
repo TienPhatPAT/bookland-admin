@@ -1,6 +1,5 @@
 import { Navigate, RouteObject, useRoutes } from "react-router-dom";
 
-import RequireAnonymous from "@/routers/RequireAnonymous";
 import { APP_ROUTES } from "@/routers/routes";
 
 import { AuthLayout } from "@/components/layout";
@@ -11,9 +10,9 @@ const configAuthRoutes: RouteObject[] = [
   {
     path: "*",
     element: (
-      <RequireAnonymous>
-        <AuthLayout />
-      </RequireAnonymous>
+      // <RequireAnonymous>
+      <AuthLayout />
+      // </RequireAnonymous>
     ),
     children: [
       {
