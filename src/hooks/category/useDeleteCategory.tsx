@@ -6,15 +6,15 @@ import { NotifyService } from "@/helpers/notify";
 
 import { BookApi } from "@/services/books.api";
 
-const useDeleteCategory = () => {
+const useDeleteBook = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: { ids: string[] }) => {
-      return BookApi.delete(data);
+    mutationFn: (id: string) => {
+      return BookApi.delete(id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [queryKeys.book] });
-      NotifyService.success("Category deleted successfully");
+      NotifyService.success("Book deleted successfully");
     },
     onError: (e) => {
       NotifyService.error(e);
@@ -22,4 +22,4 @@ const useDeleteCategory = () => {
   });
 };
 
-export default useDeleteCategory;
+export default useDeleteBook;

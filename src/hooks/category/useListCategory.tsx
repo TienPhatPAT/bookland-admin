@@ -9,7 +9,7 @@ import { NotifyService } from "@/helpers/notify";
 
 import { BookApi } from "@/services/books.api";
 
-function useListCategory(params: GetBookParams = {}): UseQueryResult<ApiResponse<BookType>, any> {
+function useListBook(params: GetBookParams = {}): UseQueryResult<ApiResponse<BookType>, any> {
   return useQuery({
     queryKey: [queryKeys.book, params],
     queryFn: async () => {
@@ -23,4 +23,4 @@ function useListCategory(params: GetBookParams = {}): UseQueryResult<ApiResponse
   });
 }
 
-export default useListCategory;
+export default useListBook;

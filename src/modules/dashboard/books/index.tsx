@@ -8,8 +8,9 @@ import { FilterValue, Metadata } from "@/models/common";
 import { IQueryString } from "@/models/query";
 import { formatDate } from "@/helpers/date";
 import { useDeleteCategory } from "@/hooks/category";
+import useListBook from "@/hooks/category/useListCategory";
 import useDebounce from "@/hooks/common/useDebounce";
-import { Datatable, FilterMenu, InputSearchUI } from "@/components/common";
+import { Datatable, FilterMenu, GlobalLoader, InputSearchUI } from "@/components/common";
 import useDialogConfirm from "@/components/confirm-dialog/use-dialog-confirm";
 import CreateBookDrawer from "@/components/drawer-right/create-edit-books-drawer";
 import useDrawerRight from "@/components/drawer-right/use-drawer";
@@ -18,7 +19,6 @@ import Mainlayout from "@/components/layout/main-layout";
 import { theme } from "@/theme";
 import { DeleteIcon, EditIcon } from "@/assets/icons";
 
-import data from "../../../jsons/books.json";
 import { filterOptions } from "./constant";
 
 const Books = () => {
@@ -26,7 +26,7 @@ const Books = () => {
     page: 1,
     limit: 25,
   });
-  // const { isLoading, data } = useListCategory(queryParams);
+  const { isLoading, data } = useListBook(queryParams);
   const { mutate: deleteContentBySlug } = useDeleteCategory();
 
   // Fix reload page when data undefined
@@ -58,11 +58,12 @@ const Books = () => {
     });
   };
 
-  const onEdit = (id: string) => {
+  const onEdit = (data: BookType) => {
     drawer.show({
       title: "Update Book",
-      body: <CreateBookDrawer isEdit idItem={id} />,
+      body: <CreateBookDrawer dataItem={data} />,
       buttonText: "Update",
+      data,
     });
   };
 
@@ -72,7 +73,7 @@ const Books = () => {
       description: CONFIRM_MESSAGE.CM1,
       color: theme.palette.red[500],
       callbackYes: () => {
-        deleteContentBySlug({ ids: [id] });
+        deleteContentBySlug(id);
       },
     });
   };
@@ -138,7 +139,7 @@ const Books = () => {
         </Mainlayout.Header>
         <Mainlayout.Body>
           <>
-            {/* {isLoading && <GlobalLoader isLoading={isLoading} />} */}
+            {isLoading && <GlobalLoader isLoading={isLoading} />}
             <Datatable
               pageSize={metaData.limit}
               pageIndex={metaData.page}
@@ -160,11 +161,11 @@ const Books = () => {
               <Datatable.ColTemplate>
                 <Datatable.HeadCell
                   sortable={true}
-                  name="id_sach"
+                  name="_id"
                   text="ID"
                   sx={{ width: "200px" }}
                 ></Datatable.HeadCell>
-                <Datatable.BodyCell field="id_sach"></Datatable.BodyCell>
+                <Datatable.BodyCell field="_id"></Datatable.BodyCell>
               </Datatable.ColTemplate>
               <Datatable.ColTemplate>
                 <Datatable.HeadCell
@@ -178,11 +179,11 @@ const Books = () => {
               <Datatable.ColTemplate>
                 <Datatable.HeadCell
                   sortable={true}
-                  name="language"
-                  text="Ngôn Ngữ"
+                  name="nxb"
+                  text="NXB"
                   sx={{ width: "200px" }}
                 ></Datatable.HeadCell>
-                <Datatable.BodyCell field="language"></Datatable.BodyCell>
+                <Datatable.BodyCell field="nxb"></Datatable.BodyCell>
               </Datatable.ColTemplate>
               <Datatable.ColTemplate>
                 <Datatable.HeadCell
@@ -192,34 +193,9 @@ const Books = () => {
                   sx={{ width: "200px" }}
                 ></Datatable.HeadCell>
                 <Datatable.BodyCell>
-                  {(data: BookType) => <img src={data.anh} alt={data.anh} height="30px" />}
+                  {(data: BookType) => <img src={data.img} alt={data.img} height="30px" />}
                 </Datatable.BodyCell>
               </Datatable.ColTemplate>
-              {/* <Datatable.ColTemplate>
-                <Datatable.HeadCell
-                  sx={{ width: "200px" }}
-                  sortable={true}
-                  name="status"
-                  text="Status"
-                ></Datatable.HeadCell>
-                <Datatable.BodyCell>
-                  {(data: StaticContentType) => (
-                    <Stack flexDirection="row" alignItems="center" textTransform="capitalize">
-                      <span
-                        style={{
-                          display: "block",
-                          width: "8px",
-                          height: "8px",
-                          borderRadius: "50%",
-                          backgroundColor: colorStatus[data.status],
-                          marginRight: "5px",
-                        }}
-                      ></span>
-                      {data.status}
-                    </Stack>
-                  )}
-                </Datatable.BodyCell>
-              </Datatable.ColTemplate> */}
               <Datatable.ColTemplate>
                 <Datatable.HeadCell
                   sortable={true}
@@ -246,7 +222,7 @@ const Books = () => {
                         <span>
                           <IconButton
                             onClick={() => {
-                              onEdit(data.id_sach);
+                              onEdit(data);
                             }}
                           >
                             <EditIcon />
@@ -255,7 +231,7 @@ const Books = () => {
                       </Tooltip>
                       <Tooltip title="Delete" placement="top">
                         <span>
-                          <IconButton onClick={() => deleteCategory(data.id_sach)}>
+                          <IconButton onClick={() => deleteCategory(data._id)}>
                             <DeleteIcon />
                           </IconButton>
                         </span>

@@ -7,11 +7,10 @@ export const API = {
   DASHBOARD: {
     PROFILE: "/admins/admins/my/profile",
     BOOK: {
-      LIST: "/admins/categories",
-      DETAIL: "/admins/categories",
-      CREATE: "/admins/book",
-      EDIT: "/admins/book",
-      DELETE: "/admins/book",
+      LIST: "/Sach/list",
+      CREATE: "Sach/add",
+      EDIT: "/admins/edit",
+      DELETE: "/Sach/delete",
     },
   },
   PUBLIC: {},

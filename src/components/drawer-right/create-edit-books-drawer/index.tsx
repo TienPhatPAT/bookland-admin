@@ -10,9 +10,9 @@ import { Stack } from "@mui/material";
 import { EAction } from "@/constants/event";
 
 import { BookType, PostBookRequest } from "@/models/book";
-import { useAddCategory, useCategoryById, useEditCategory } from "@/hooks/category";
+import { useAddCategory, useEditCategory } from "@/hooks/category";
 import useDialogConfirm from "@/components/confirm-dialog/use-dialog-confirm";
-import DropdownField from "@/components/form-control/dropdown-field";
+import CheckBoxField from "@/components/form-control/check-box-field";
 import ImageField from "@/components/form-control/image-field/index ";
 import InputField from "@/components/form-control/input-field";
 
@@ -21,29 +21,32 @@ import { theme } from "@/theme";
 import useDrawerRight from "../use-drawer";
 
 interface Props {
-  isEdit?: boolean;
-  idItem?: string;
+  dataItem?: BookType;
 }
 
 const formSchema = yup.object().shape({
-  title: yup.string().required(ERROR_MESSAGE.IEM1),
-  name: yup.string().required(ERROR_MESSAGE.IEM1),
-  image: yup.string().required(ERROR_MESSAGE.IEM1),
-  status: yup.string().required(ERROR_MESSAGE.IEM1),
+  id_tacgia: yup.string().required(ERROR_MESSAGE.IEM1),
+  nxb: yup.string().optional(),
+  img: yup.string().required(ERROR_MESSAGE.IEM1),
+  description: yup.string().optional(),
+  ngayxuatban: yup.string().optional(),
+  ngaytao: yup.string().optional(),
+  isRecommended: yup.boolean().required(ERROR_MESSAGE.IEM1),
+  ten: yup.string().required(ERROR_MESSAGE.IEM1),
+  view: yup.number().required(ERROR_MESSAGE.IEM1),
+  price: yup.number().required(ERROR_MESSAGE.IEM1),
+  recomendedPriority: yup.number().required(ERROR_MESSAGE.IEM1),
+  star: yup.number().required(ERROR_MESSAGE.IEM1),
+  sold: yup.number().required(ERROR_MESSAGE.IEM1),
+  language: yup.string().optional(),
+  hien_thi: yup.boolean().required(ERROR_MESSAGE.IEM1),
 });
 
-const CreateBookDrawer = ({ isEdit = false, idItem }: Props) => {
-  const { data } = useCategoryById(idItem);
-  const CategoryDetail: BookType | undefined = data?.data.data;
+const CreateBookDrawer = ({ dataItem }: Props) => {
   const { mutate: addCategory } = useAddCategory();
   const { mutate: editCategory } = useEditCategory();
   const { hide } = useDrawerRight();
   const dialog = useDialogConfirm();
-
-  const statusList = [
-    { label: "Active", value: "active" },
-    { label: "Inactive", value: "inactive" },
-  ];
 
   useEffect(() => {
     subscribe(EAction.MAIN, onSubmit);
@@ -56,10 +59,21 @@ const CreateBookDrawer = ({ isEdit = false, idItem }: Props) => {
 
   const form = useForm({
     defaultValues: {
-      title: "",
-      name: "",
-      image: "",
-      status: "active",
+      id_tacgia: "66839c1206eac338985bd5e7",
+      nxb: "",
+      img: "https://307a0e78.vws.vegacdn.vn/view/v2/image/img.book/0/0/1/48502.jpg?v=1&w=480&h=700",
+      description: "",
+      ngayxuatban: "2024-05-29T00:00:00.000Z",
+      ngaytao: "2024-05-29T00:00:00.000Z",
+      isRecommended: false,
+      ten: "",
+      view: 123,
+      price: 0,
+      recomendedPriority: 0,
+      star: 5,
+      sold: 4455,
+      language: "",
+      hien_thi: true,
     },
     mode: "onChange",
     resolver: yupResolver(formSchema),
@@ -67,23 +81,45 @@ const CreateBookDrawer = ({ isEdit = false, idItem }: Props) => {
   const { control, reset } = form;
 
   useEffect(() => {
-    if (isEdit && CategoryDetail) {
+    if (dataItem) {
       reset({
-        title: CategoryDetail.title,
-        name: CategoryDetail.name,
-        image: CategoryDetail.image,
-        status: CategoryDetail.status,
+        id_tacgia: dataItem.tacgia,
+        nxb: dataItem.nxb,
+        img: dataItem.img,
+        description: dataItem.description,
+        ngayxuatban: dataItem.ngayxuatban,
+        ngaytao: dataItem.ngaytao,
+        isRecommended: dataItem.isRecommended,
+        ten: dataItem.ten,
+        view: dataItem.view,
+        price: dataItem.price,
+        recomendedPriority: dataItem.recomendedPriority,
+        star: dataItem.star,
+        sold: dataItem.sold,
+        language: "",
+        hien_thi: dataItem.hien_thi,
       });
     }
-  }, [CategoryDetail, isEdit, reset]);
+  }, [dataItem, reset]);
 
   const onSubmit = form.handleSubmit(() => {
     const rawValue = form.getValues();
     const request: PostBookRequest = {
-      title: rawValue.title,
-      name: rawValue.name,
-      image: rawValue.image,
-      status: rawValue.status,
+      ten: rawValue.ten,
+      id_tacgia: rawValue.id_tacgia,
+      nxb: rawValue.nxb,
+      img: rawValue.img,
+      description: rawValue.description,
+      ngayxuatban: rawValue.ngayxuatban,
+      ngaytao: rawValue.ngaytao,
+      isRecommended: rawValue.isRecommended,
+      view: rawValue.view,
+      price: rawValue.price,
+      recomendedPriority: rawValue.recomendedPriority,
+      star: rawValue.star,
+      sold: rawValue.sold,
+      language: rawValue.language,
+      hien_thi: rawValue.hien_thi,
     };
     dialog.show({
       title: "Confirm action",
@@ -91,8 +127,8 @@ const CreateBookDrawer = ({ isEdit = false, idItem }: Props) => {
       color: theme.palette.primary.main,
       yesText: "Submit",
       callbackYes: () => {
-        if (isEdit && idItem) {
-          request.id = idItem;
+        if (dataItem) {
+          request.id = dataItem._id;
           editCategory(request, {
             onSuccess() {
               reset();
@@ -113,18 +149,11 @@ const CreateBookDrawer = ({ isEdit = false, idItem }: Props) => {
 
   return (
     <Stack gap={2}>
-      <InputField name="title" label="Title" placeholder="Title" control={control} />
-      <InputField name="name" label="Name" placeholder="Name" control={control} />
-      <DropdownField
-        withoutSearch
-        variant="outlined"
-        optionList={statusList}
-        name="status"
-        control={control}
-        label="Status"
-        placeholder="Status"
-      />
-      <ImageField name="image" control={control} label="Image" />
+      <ImageField name="img" control={control} />
+      <InputField name="ten" label="Ten Sach" placeholder="Ten" control={control} />
+      <InputField name="nxb" label="NXB" placeholder="nxb" control={control} />
+      <InputField name="price" label="Price" placeholder="Price" control={control} type="number" />
+      <CheckBoxField name="isRecommended" label="Recommended" control={control} />
     </Stack>
   );
 };

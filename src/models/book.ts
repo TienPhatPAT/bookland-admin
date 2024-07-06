@@ -1,18 +1,23 @@
 import { CommonParams } from "./common";
 
 export interface BookType {
-  id_sach: string;
-  id_tacgia: string;
-  ten: string;
+  _id: string;
+  tacgia: string;
   nxb: string;
-  anh: string;
-  mieuta: string;
-  language: string;
+  img: string;
+  description: string;
   ngayxuatban: string;
   ngaytao: string;
-  isbn: string;
-  page_count: number;
-  dexuat: boolean;
+  isRecommended: boolean;
+  ten: string;
+  view: number;
+  price: number;
+  recomendedPriority: number;
+  star: number;
+  sold: number;
+  theloai: string[];
+  hien_thi: boolean;
+  __v: number;
 }
 
 export interface GetBookParams extends CommonParams {
@@ -21,8 +26,19 @@ export interface GetBookParams extends CommonParams {
 
 export interface PostBookRequest {
   id?: string;
-  title: string;
-  name: string;
-  image: string;
-  status: string;
+  id_tacgia?: string;
+  nxb?: string;
+  img: string;
+  description?: string;
+  ngayxuatban?: string;
+  ngaytao?: string;
+  isRecommended: boolean;
+  ten: string;
+  view: number;
+  price: number;
+  recomendedPriority: number;
+  star: number;
+  sold: number;
+  language?: string;
+  hien_thi: boolean;
 }
