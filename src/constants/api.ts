@@ -9,8 +9,13 @@ export const API = {
     BOOK: {
       LIST: "/Sach/list",
       CREATE: "Sach/add",
-      EDIT: "/admins/edit",
+      EDIT: "/Sach/edit",
       DELETE: "/Sach/delete",
+    },
+    TAC_GIA: {
+      LIST: "/tacgia/list",
+      CREATE: "/tacgia/add",
+      EDIT: "/tacgia/edit",
     },
   },
   PUBLIC: {},

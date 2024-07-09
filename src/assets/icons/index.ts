@@ -23,3 +23,4 @@ export { default as sortUptIcon } from "./sort-up-icon";
 export { default as VoucherIcon } from "./voucher-icon";
 export { default as DetailIcon } from "./detail-icon";
 export { default as BookIcon } from "./book-icon";
+export { default as CalenderIcon } from "./calender-icon";

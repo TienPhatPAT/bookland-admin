@@ -8,4 +8,7 @@ export const queryKeys = {
   media: {
     upload: "media-upload",
   },
+  tac_gia: {
+    list: "tacgia-list",
+  },
 };

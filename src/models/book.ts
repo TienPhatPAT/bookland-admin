@@ -9,7 +9,7 @@ export interface BookType {
   ngayxuatban: string;
   ngaytao: string;
   isRecommended: boolean;
-  ten: string;
+  name: string;
   view: number;
   price: number;
   recomendedPriority: number;
@@ -33,7 +33,7 @@ export interface PostBookRequest {
   ngayxuatban?: string;
   ngaytao?: string;
   isRecommended: boolean;
-  ten: string;
+  name: string;
   view: number;
   price: number;
   recomendedPriority: number;

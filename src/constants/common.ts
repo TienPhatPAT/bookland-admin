@@ -118,3 +118,6 @@ export const CONSTANTS = {
 };
 // image size
 export type ISizeUnit = "TB" | "GB" | "MB" | "KB" | "B";
+
+export const DATE_PICKER_MIN_YEAR = 1970;
+export const DATE_PICKER_MAX_YEAR = new Date().getFullYear() + 100;

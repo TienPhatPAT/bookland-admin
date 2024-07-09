@@ -170,11 +170,11 @@ const Books = () => {
               <Datatable.ColTemplate>
                 <Datatable.HeadCell
                   sortable={true}
-                  name="ten"
+                  name="name"
                   text="Tên Sách"
                   sx={{ width: "200px" }}
                 ></Datatable.HeadCell>
-                <Datatable.BodyCell field="ten"></Datatable.BodyCell>
+                <Datatable.BodyCell field="name"></Datatable.BodyCell>
               </Datatable.ColTemplate>
               <Datatable.ColTemplate>
                 <Datatable.HeadCell
