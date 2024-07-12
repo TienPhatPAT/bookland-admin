@@ -102,7 +102,7 @@ export const TOAST: { [key: string]: ToastOptions } = {
   },
 };
 
-export const INIT_COUNTRY_CODE = { code: "+65", name: "sg" };
+export const INIT_COUNTRY_CODE = { code: "+84", name: "vn" };
 
 export const ERROR_CODE = {
   1001: 1001, // Invalid email or password

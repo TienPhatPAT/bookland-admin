@@ -1,18 +1,17 @@
 import { CommonParams } from "./common";
 
 export interface UserType {
-  id_user: string;
+  _id: string;
   loaitaikhoan: number;
   password: string;
   email: string;
   ten: string;
-  mieuta: string;
-  language: string;
-  ngayxuatban: string;
+  gioitinh: number;
+  avt: string;
+  sdt: string;
   ngaytao: string;
-  isbn: string;
-  page_count: number;
-  dexuat: boolean;
+  is_active: boolean;
+  __v: number;
 }
 
 export interface GetUserParams extends CommonParams {
@@ -20,9 +19,14 @@ export interface GetUserParams extends CommonParams {
 }
 
 export interface PostUserRequest {
-  id?: string;
-  title: string;
-  name: string;
-  image: string;
-  status: string;
+  id_user?: string;
+  ten?: string;
+  password: string;
+  email: string;
+  gioitinh?: number;
+  avt?: string;
+  sdt?: string;
+  ngaytao?: string;
+  loaitaikhoan?: number;
+  is_active: boolean;
 }

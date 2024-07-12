@@ -1,25 +1,24 @@
 import { useEffect, useMemo, useState } from "react";
 import { CONFIRM_MESSAGE, DELAY_SEARCH_TIME } from "@/constants";
 
-import { Breadcrumbs, Button, IconButton, Link, Stack, Tooltip } from "@mui/material";
+import { Avatar, Breadcrumbs, Button, IconButton, Link, Stack, Tooltip } from "@mui/material";
 
 import { GetBookParams } from "@/models/book";
 import { FilterValue, Metadata } from "@/models/common";
 import { IQueryString } from "@/models/query";
 import { UserType } from "@/models/user";
 import { formatDate } from "@/helpers/date";
-import { useDeleteCategory } from "@/hooks/category";
 import useDebounce from "@/hooks/common/useDebounce";
-import { Datatable, FilterMenu, InputSearchUI } from "@/components/common";
+import { useUser } from "@/hooks/users";
+import { Datatable, FilterMenu, GlobalLoader, InputSearchUI } from "@/components/common";
 import useDialogConfirm from "@/components/confirm-dialog/use-dialog-confirm";
-import CreateBookDrawer from "@/components/drawer-right/create-edit-books-drawer";
+import CreateUserDrawer from "@/components/drawer-right/create-edit-users-drawer";
 import useDrawerRight from "@/components/drawer-right/use-drawer";
 import Mainlayout from "@/components/layout/main-layout";
 
 import { theme } from "@/theme";
 import { DeleteIcon, EditIcon } from "@/assets/icons";
 
-import data from "../../../jsons/users.json";
 import { filterOptions } from "./constant";
 
 const Users = () => {
@@ -27,8 +26,10 @@ const Users = () => {
     page: 1,
     limit: 25,
   });
-  // const { isLoading, data } = useListCategory(queryParams);
-  const { mutate: deleteContentBySlug } = useDeleteCategory();
+
+  const { useGetList, del } = useUser();
+
+  const { data, isFetched } = useGetList(queryParams);
 
   // Fix reload page when data undefined
   const [dataBook, setDataBook] = useState<UserType[]>([]);
@@ -54,26 +55,26 @@ const Users = () => {
   const onCreate = () => {
     drawer.show({
       title: "Create Book",
-      body: <CreateBookDrawer />,
+      body: <CreateUserDrawer />,
       buttonText: "Create",
     });
   };
 
-  const onEdit = (id: string) => {
+  const onEdit = (data: UserType) => {
     drawer.show({
       title: "Update User",
-      body: <CreateBookDrawer isEdit idItem={id} />,
+      body: <CreateUserDrawer dataItem={data} />,
       buttonText: "Update",
     });
   };
 
-  const deleteCategory = (id: string) => {
+  const onDelete = (id: string) => {
     dialog.show({
       title: "Delete User ?",
       description: CONFIRM_MESSAGE.CM1,
       color: theme.palette.red[500],
       callbackYes: () => {
-        deleteContentBySlug({ ids: [id] });
+        del.mutate(id);
       },
     });
   };
@@ -139,7 +140,7 @@ const Users = () => {
         </Mainlayout.Header>
         <Mainlayout.Body>
           <>
-            {/* {isLoading && <GlobalLoader isLoading={isLoading} />} */}
+            {!isFetched && <GlobalLoader isLoading={!isFetched} />}
             <Datatable
               pageSize={metaData.limit}
               pageIndex={metaData.page}
@@ -161,11 +162,28 @@ const Users = () => {
               <Datatable.ColTemplate>
                 <Datatable.HeadCell
                   sortable={true}
-                  name="id_user"
+                  name="_id"
                   text="ID"
                   sx={{ width: "200px" }}
                 ></Datatable.HeadCell>
-                <Datatable.BodyCell field="id_user"></Datatable.BodyCell>
+                <Datatable.BodyCell field="_id"></Datatable.BodyCell>
+              </Datatable.ColTemplate>
+              <Datatable.ColTemplate>
+                <Datatable.HeadCell
+                  sx={{ width: "100px" }}
+                  sortable={true}
+                  name="avt"
+                  text="Avatar"
+                ></Datatable.HeadCell>
+                <Datatable.BodyCell>
+                  {(data: UserType) => (
+                    <Avatar
+                      sx={{ width: "30px", height: "30px" }}
+                      src={data?.avt}
+                      alt={data?.avt}
+                    />
+                  )}
+                </Datatable.BodyCell>
               </Datatable.ColTemplate>
               <Datatable.ColTemplate>
                 <Datatable.HeadCell
@@ -196,40 +214,15 @@ const Users = () => {
                   {(data: UserType) => <>{data.loaitaikhoan === 1 ? "Admin" : "User"}</>}
                 </Datatable.BodyCell>
               </Datatable.ColTemplate>
-              {/* <Datatable.ColTemplate>
-                <Datatable.HeadCell
-                  sx={{ width: "200px" }}
-                  sortable={true}
-                  name="status"
-                  text="Status"
-                ></Datatable.HeadCell>
-                <Datatable.BodyCell>
-                  {(data: StaticContentType) => (
-                    <Stack flexDirection="row" alignItems="center" textTransform="capitalize">
-                      <span
-                        style={{
-                          display: "block",
-                          width: "8px",
-                          height: "8px",
-                          borderRadius: "50%",
-                          backgroundColor: colorStatus[data.status],
-                          marginRight: "5px",
-                        }}
-                      ></span>
-                      {data.status}
-                    </Stack>
-                  )}
-                </Datatable.BodyCell>
-              </Datatable.ColTemplate> */}
               <Datatable.ColTemplate>
                 <Datatable.HeadCell
                   sortable={true}
                   name="ngayxuatban"
-                  text="Ngày Xuất Bản"
+                  text="Ngày Tao"
                   sx={{ width: "200px" }}
                 ></Datatable.HeadCell>
                 <Datatable.BodyCell>
-                  {(data: UserType) => <>{formatDate(data.ngayxuatban)}</>}
+                  {(data: UserType) => <>{formatDate(data?.ngaytao)}</>}
                 </Datatable.BodyCell>
               </Datatable.ColTemplate>
               <Datatable.ColTemplate>
@@ -241,13 +234,12 @@ const Users = () => {
                 ></Datatable.HeadCell>
                 <Datatable.BodyCell>
                   {(data: UserType) => (
-                    //import data: Admin when handle onEditStaticContent/deleteStaticContent
                     <Stack flexDirection="row" alignItems="center" gap={0.5}>
                       <Tooltip title="Update" placement="top">
                         <span>
                           <IconButton
                             onClick={() => {
-                              onEdit(data.id_user);
+                              onEdit(data);
                             }}
                           >
                             <EditIcon />
@@ -256,7 +248,7 @@ const Users = () => {
                       </Tooltip>
                       <Tooltip title="Delete" placement="top">
                         <span>
-                          <IconButton onClick={() => deleteCategory(data.id_user)}>
+                          <IconButton onClick={() => onDelete(data._id)}>
                             <DeleteIcon />
                           </IconButton>
                         </span>

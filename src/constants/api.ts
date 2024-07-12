@@ -17,6 +17,12 @@ export const API = {
       CREATE: "/tacgia/add",
       EDIT: "/tacgia/edit",
     },
+    USER: {
+      LIST: "/User/list",
+      CREATE: "User/add",
+      EDIT: "/User/edit",
+      DELETE: "/User/delete",
+    },
   },
   PUBLIC: {},
   MEDIA: {
