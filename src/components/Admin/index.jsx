@@ -432,7 +432,7 @@ const Admin = () => {
               <label>Số điện thoại:</label>
               <input type="text" name="sdt" value={newUser.sdt} onChange={handleInputChange} />
               <label>Ảnh đại diện:</label>
-              <input type="file" name="avt" onChange={handleInputChange} />
+              <input type="text" name="avt" value={newUser.avt} onChange={handleInputChange} />
               {newUser.avt && (
                 <div>
                   <img

@@ -447,7 +447,7 @@ const NguoiDung = () => {
                 required
               />
               <label>Ảnh đại diện:</label>
-              <input type="file" name="avt" onChange={handleInputChange} />
+              <input type="text" name="avt" value={newUser.avt} onChange={handleInputChange} />
               {newUser.avt && (
                 <div>
                   <img

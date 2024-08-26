@@ -404,7 +404,7 @@ const TacGia = () => {
                 required
               />
               <label>Ảnh:</label>
-              <input type="file" name="img" onChange={handleInputChange} />
+              <input type="text" name="img" value={newAuthor.img} onChange={handleInputChange} />
 
               <label className={styles.block}>Tiểu sử:</label>
               <textarea name="tieusu" value={newAuthor.tieusu} onChange={handleInputChange} />

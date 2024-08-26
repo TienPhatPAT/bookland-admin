@@ -373,7 +373,14 @@ const Article = () => {
                 </div>
                 <div className={styles.inputWrapper}>
                   <label htmlFor="img">Ảnh</label>
-                  <input type="file" id="img" name="img" onChange={handleInputChange} required />
+                  <input
+                    type="text"
+                    id="img"
+                    name="img"
+                    value={newArticle.img}
+                    onChange={handleInputChange}
+                    required
+                  />
                 </div>
               </div>
               <div className={`${styles.formGroup} ${styles.row2}`}>

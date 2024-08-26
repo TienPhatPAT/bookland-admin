@@ -424,7 +424,7 @@ const Sach = () => {
                 </div>
                 <div className={styles.inputWrapper}>
                   <label>Ảnh:</label>
-                  <input type="file" name="img" onChange={handleInputChange} />
+                  <input type="text" name="img" value={newBook.img} onChange={handleInputChange} />
                 </div>
               </div>
 

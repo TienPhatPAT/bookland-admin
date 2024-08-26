@@ -357,8 +357,9 @@ const Banner = () => {
 
               <label htmlFor="img">Ảnh:</label>
               <input
-                type="file"
+                type="text"
                 id="img"
+                value={newBanner.img}
                 onChange={(e) => setNewBanner({ ...newBanner, img: e.target.files[0] })}
                 required
               />
