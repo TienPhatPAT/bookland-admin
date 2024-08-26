@@ -335,7 +335,7 @@ const Admin = () => {
               <table>
                 <thead>
                   <tr>
-                    <th>Id</th>
+                    <th>STT</th>
                     <th>Ảnh</th>
                     <th>Tên</th>
                     <th>Loại Tài Khoản</th>
@@ -347,11 +347,11 @@ const Admin = () => {
                   </tr>
                 </thead>
                 <tbody id="user-table-body">
-                  {currentUsers.map((user) => (
+                  {currentUsers.map((user, index) => (
                     <tr key={user._id}>
                       {" "}
                       {/* Thêm thuộc tính key ở đây */}
-                      <td className={styles.deid}>{user._id}</td>
+                      <td className={styles.deid}>{index + 1}</td>
                       <td>
                         <img src={user.avt} alt="" />
                       </td>
