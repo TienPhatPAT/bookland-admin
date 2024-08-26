@@ -314,7 +314,7 @@ const Sach = () => {
         </ul>
         <ul className={styles.menu}>
           <li>
-            <a href="#" className={styles.logout}>
+            <a href="/dangnhap" className={styles.logout}>
               <i className={styles.bx}>
                 <IoLogOut />
               </i>
@@ -330,14 +330,7 @@ const Sach = () => {
             <FaAlignJustify />
           </i>
           <form action="#">
-            <div className={styles.forminput}>
-              <input type="search" placeholder="Search..." />
-              <button type="submit" className={styles.searchbtn}>
-                <i className={styles.bx}>
-                  <IoSearch />
-                </i>
-              </button>
-            </div>
+            <div className={styles.forminput}></div>
           </form>
           <a href="#" className={styles.profile}>
             <img src="" alt="" />
@@ -362,7 +355,7 @@ const Sach = () => {
                     <th>Ảnh</th>
                     <th>Tên</th>
                     <th>Giá</th>
-                    <th>Giá cũ</th>
+
                     <th>Mô tả</th>
                     <th>Trạng thái</th>
                     <th>Hành động</th>
@@ -377,7 +370,6 @@ const Sach = () => {
                       </td>
                       <td className={styles.tenb}>{book.ten}</td>
                       <td>{book.gia}</td>
-                      <td>{book.giacu}</td>
                       <td className={styles.motaa}>{book.mota}</td>
                       <td>{book.hien_thi ? "True" : "False"}</td>
                       <td>

@@ -194,7 +194,7 @@ const BinhLuan = () => {
         </ul>
         <ul className={styles.menu}>
           <li>
-            <a href="#" className={styles.logout}>
+            <a href="/dangnhap" className={styles.logout}>
               <i className={styles.bx}>
                 <IoLogOut />
               </i>

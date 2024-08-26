@@ -27,12 +27,12 @@ const DonHang = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await fetch("https://bookland-api.vercel.app/api/donhang/");
+        const response = await fetch("https://bookland-api.vercel.app/api/order/");
         if (!response.ok) {
           throw new Error("Lỗi khi lấy danh sách đơn hàng");
         }
         const data = await response.json();
-        setOrders(data?.data);
+        setOrders(data?.data?.data);
       } catch (error) {
         console.error("Lỗi khi lấy danh sách đơn hàng:", error);
       }
@@ -176,7 +176,7 @@ const DonHang = () => {
         </ul>
         <ul className={styles.menu}>
           <li>
-            <a href="#" className={styles.logout}>
+            <a href="/dangnhap" className={styles.logout}>
               <i className={styles.bx}>
                 <IoLogOut />
               </i>
@@ -229,20 +229,14 @@ const DonHang = () => {
                   {currentOrders.map((order) => (
                     <tr key={order._id}>
                       <td className={styles.deid}>{order._id}</td>
-                      <td className={styles.deid}>{order?.id_nguoidung}</td>
-                      <td className={styles.deid}> {order.diachi}</td>
-                      <td>{order.sdt}</td>
-                      <td>{order.nguoinhan}</td>
-                      <td>{order?.id_sach}</td>
+                      <td className={styles.deid}>{order?.user?.ten}</td>
+                      <td className={styles.deid}> {order.address}</td>
+                      <td>{order.user?.phone}</td>
+                      <td>{order.user?.ten}</td>
+                      <td>{order?.items[0].book.id}</td>
                       <td>{order?._id_chitietdonhang?.soluong}</td>
-                      <td>{order.phuongthucthanhtoan === 0 ? "Tiền Mặt" : "Ngân Hàng"}</td>
-                      <td>
-                        {order.status === 0 && "Chờ Duyệt"}
-                        {order.status === 1 && "Đang Giao Hàng"}
-                        {order.status === 2 && "Đã Giao Hàng"}
-                        {order.status === 3 && "Hủy"}
-                        {order.status === 4 && "Trả Hàng"}
-                      </td>
+                      <td>{order.paymentMethod}</td>
+                      <td>{order.status}</td>
                       <td>
                         <button className={styles.details}>
                           <FaEye />

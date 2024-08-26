@@ -240,7 +240,7 @@ const Article = () => {
         </ul>
         <ul className={styles.menu}>
           <li>
-            <a href="#" className={styles.logout}>
+            <a href="/dangnhap" className={styles.logout}>
               <i className={styles.bx}>
                 <IoLogOut />
               </i>
@@ -286,7 +286,6 @@ const Article = () => {
                     <th>ID</th>
                     <th>Ảnh</th>
                     <th>Tiêu Đề</th>
-                    <th>Nội Dung</th>
                     <th>Hiện thị</th>
                     <th>Hành Động</th>
                   </tr>
@@ -299,7 +298,7 @@ const Article = () => {
                         <img src={article.img} alt="" style={{ maxWidth: "100px" }} />
                       </td>
                       <td>{article.tieude}</td>
-                      <td>{article.noidung}</td>
+
                       <td>{article.trangthai ? "True" : "False"}</td>
                       <td>
                         <button
@@ -308,10 +307,7 @@ const Article = () => {
                         >
                           <MdDelete />
                         </button>
-                        <button className={styles.edit} onClick={() => handleShowMore(article)}>
-                          <FaEdit />
-                        </button>
-                        <button className={styles.details}>
+                        <button className={styles.details} onClick={() => handleShowMore(article)}>
                           <FaEye />
                         </button>
                       </td>
@@ -377,14 +373,7 @@ const Article = () => {
                 </div>
                 <div className={styles.inputWrapper}>
                   <label htmlFor="img">Ảnh</label>
-                  <input
-                    type="file"
-                    id="img"
-                    name="img"
-                    value={newArticle.img}
-                    onChange={handleInputChange}
-                    required
-                  />
+                  <input type="file" id="img" name="img" onChange={handleInputChange} required />
                 </div>
               </div>
               <div className={`${styles.formGroup} ${styles.row2}`}>
