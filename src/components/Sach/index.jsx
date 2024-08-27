@@ -351,26 +351,28 @@ const Sach = () => {
               <table>
                 <thead>
                   <tr>
-                    <th>Id</th>
+                    <th>STT</th>
                     <th>Ảnh</th>
                     <th>Tên</th>
                     <th>Giá</th>
 
-                    <th>Mô tả</th>
+                    <th>Tác giả</th>
+                    <th>Thể loại</th>
                     <th>Trạng thái</th>
                     <th>Hành động</th>
                   </tr>
                 </thead>
                 <tbody id="book-table-body">
-                  {currentBooks.map((book) => (
+                  {currentBooks.map((book, index) => (
                     <tr key={book._id}>
-                      <td className={styles.deid}>{book._id}</td>
+                      <td className={styles.deid}>{index + 1}</td>
                       <td>
                         <img src={book.img} />
                       </td>
                       <td className={styles.tenb}>{book.ten}</td>
                       <td>{book.gia}</td>
-                      <td className={styles.motaa}>{book.mota}</td>
+                      <td className={styles.motaa}>{book.tacgia.ten}</td>
+                      <td className={styles.hien_thi}>{book.theloaisach[0].ten}</td>
                       <td>{book.hien_thi ? "True" : "False"}</td>
                       <td>
                         <button

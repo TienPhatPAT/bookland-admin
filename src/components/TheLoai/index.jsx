@@ -335,7 +335,7 @@ const Category = () => {
               <table>
                 <thead>
                   <tr>
-                    <th>ID</th>
+                    <th>STT</th>
                     <th>Ảnh</th>
                     <th>Tên</th>
                     <th>Hiển Thị</th>
@@ -343,9 +343,9 @@ const Category = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {currentCategories.map((category) => (
+                  {currentCategories.map((category, index) => (
                     <tr key={category._id}>
-                      <td className={styles.deid}>{category._id}</td>
+                      <td className={styles.deid}>{index + 1}</td>
                       <td>
                         <img src={category.img} alt="" />
                       </td>

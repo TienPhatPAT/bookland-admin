@@ -283,7 +283,7 @@ const Article = () => {
               <table>
                 <thead>
                   <tr>
-                    <th>ID</th>
+                    <th>STT</th>
                     <th>Ảnh</th>
                     <th>Tiêu Đề</th>
                     <th>Hiện thị</th>
@@ -291,9 +291,9 @@ const Article = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {currentArticles.map((article) => (
+                  {currentArticles.map((article, index) => (
                     <tr key={article._id}>
-                      <td>{article._id}</td>
+                      <td>{index + 1}</td>
                       <td>
                         <img src={article.img} alt="" style={{ maxWidth: "100px" }} />
                       </td>

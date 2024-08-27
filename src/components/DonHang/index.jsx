@@ -16,6 +16,7 @@ import styles from "./donhang.module.scss";
 import { FaEye } from "react-icons/fa6";
 import { FaUsers } from "react-icons/fa";
 import { PiUserListFill } from "react-icons/pi";
+
 const DonHang = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
@@ -23,6 +24,9 @@ const DonHang = () => {
   const [orders, setOrders] = useState([]);
   const [orderDetails, setOrderDetails] = useState([]);
   const ordersPerPage = 10;
+  const [isEditing, setIsEditing] = useState(false);
+  const [status, setStatus] = useState("completed");
+  const [idOrder, setIdOrder] = useState("");
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -59,6 +63,8 @@ const DonHang = () => {
   const handleShowMore = (order) => {
     setCurrentOrder(order);
     setShowModal(true);
+    setIdOrder(order?._id);
+    setStatus(order?.status);
   };
 
   const handleCloseModal = () => {
@@ -66,23 +72,32 @@ const DonHang = () => {
     setCurrentOrder(null);
   };
 
-  // const handleDeleteOrder = async (orderId) => {
-  //   try {
-  //     const response = await fetch(`${process.env.REACT_APP_URL}donhang/${orderId}`, {
-  //       method: 'DELETE',
-  //     });
+  const handleUpdateOrder = async (e) => {
+    e.preventDefault();
 
-  //     if (!response.ok) {
-  //       throw new Error('Lỗi khi xóa đơn hàng');
-  //     }
+    try {
+      const response = await fetch(`https://bookland-api.vercel.app/api/order/${idOrder}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          status: status,
+        }),
+      });
 
-  //     setOrders(orders.filter(order => order._id !== orderId));
-  //     alert('Xóa đơn hàng thành công');
-  //   } catch (error) {
-  //     console.error('Lỗi khi xóa đơn hàng:', error);
-  //     alert('Lỗi khi xóa đơn hàng');
-  //   }
-  // };
+      const data = await response.json();
+      if (data.success) {
+        handleCloseModal();
+        alert("Cập nhật sách thành công");
+      } else {
+        alert(data.message || "Cập nhật sách không thành công");
+      }
+    } catch (error) {
+      console.error("Lỗi khi cập nhật sách:", error);
+      alert("Có lỗi xảy ra, vui lòng thử lại.");
+    }
+  };
 
   return (
     <>
@@ -213,7 +228,7 @@ const DonHang = () => {
               <table>
                 <thead>
                   <tr>
-                    <th>ID đơn hàng</th>
+                    <th>STT</th>
                     <th>Người dùng</th>
                     <th>Địa chỉ</th>
                     <th>Số điện thoại</th>
@@ -226,9 +241,9 @@ const DonHang = () => {
                   </tr>
                 </thead>
                 <tbody id="order-table-body">
-                  {currentOrders.map((order) => (
+                  {currentOrders.map((order, index) => (
                     <tr key={order._id}>
-                      <td className={styles.deid}>{order._id}</td>
+                      <td className={styles.deid}>{index + 1}</td>
                       <td className={styles.deid}>{order?.user?.ten}</td>
                       <td className={styles.deid}> {order.address}</td>
                       <td>{order.user?.phone}</td>
@@ -238,8 +253,8 @@ const DonHang = () => {
                       <td>{order.paymentMethod}</td>
                       <td>{order.status}</td>
                       <td>
-                        <button className={styles.details}>
-                          <FaEye />
+                        <button className={styles.details} onClick={() => handleShowMore(order)}>
+                          <FaEdit />
                         </button>
                       </td>
                     </tr>
@@ -261,31 +276,32 @@ const DonHang = () => {
 
       {showModal && (
         <div className={styles.modal}>
-          <div className={styles.modalContent}>
+          <div className={styles.modalContentt}>
             <span className={styles.close} onClick={handleCloseModal}>
-              &times;
+              x
             </span>
-            <h2>Chi Tiết Đơn Hàng</h2>
-            <p>ID Đơn Hàng: {currentOrder.id_donhang}</p>
-            <p>ID Người Dùng: {currentOrder.id_nguoidung.ten}</p>
-            <p>Địa Chỉ: {currentOrder.diachi}</p>
-            <p>Số Điện Thoại: {currentOrder.sdt}</p>
-            <p>Người Nhận: {currentOrder.nguoinhan}</p>
-            <p>
-              Phương Thức Thanh Toán:{" "}
-              {currentOrder.phuongthucthanhtoan === 0 ? "Tiền Mặt" : "Ngân Hàng"}
-            </p>
-            <p>Ghi Chú: {currentOrder.ghichu}</p>
-            <p>Ngày Đặt Hàng: {currentOrder.ngaydathang}</p>
-            <p>
-              Trạng Thái:
-              {currentOrder.status === 0 && "Chờ Duyệt"}
-              {currentOrder.status === 1 && "Đang Giao Hàng"}
-              {currentOrder.status === 2 && "Đã Giao Hàng"}
-              {currentOrder.status === 3 && "Hủy"}
-              {currentOrder.status === 4 && "Trả Hàng"}
-            </p>
-            <p>Thanh Toán: {currentOrder.thanhtoan === 0 ? "Chưa Thanh Toán" : "Đã Thanh Toán"}</p>
+            <form onSubmit={handleUpdateOrder}>
+              <div className={styles.formGroup}>
+                <div className={styles.inputWrapper}>
+                  <label>Trạng thái:</label>
+                  <select
+                    id="status"
+                    name="status"
+                    value={status}
+                    onChange={(e) => {
+                      console.log(e.target.value);
+
+                      setStatus(e.target.value);
+                    }}
+                  >
+                    <option value="completed">Đã thanh toán</option>
+                    <option value="pending">Đang xử lý</option>
+                    <option value="cancelled">Đã Hũy</option>
+                  </select>
+                </div>
+              </div>
+              <button type="submit">Cập nhật</button>
+            </form>
           </div>
         </div>
       )}

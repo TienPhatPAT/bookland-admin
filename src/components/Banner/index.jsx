@@ -265,7 +265,7 @@ const Banner = () => {
               <table>
                 <thead>
                   <tr>
-                    <th>Id</th>
+                    <th>STT</th>
                     <th>Ảnh</th>
                     <th>URL</th>
                     <th>Lượt Click</th>
@@ -277,9 +277,9 @@ const Banner = () => {
                   </tr>
                 </thead>
                 <tbody id="banner-table-body">
-                  {currentBanners.map((banner) => (
+                  {currentBanners.map((banner, index) => (
                     <tr key={banner._id}>
-                      <td className={styles.deid}>{banner._id}</td>
+                      <td className={styles.deid}>{index + 1}</td>
                       <td>
                         <img src={banner.img} alt="" />
                       </td>

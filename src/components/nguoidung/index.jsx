@@ -164,20 +164,6 @@ const NguoiDung = () => {
     }
   };
 
-  // const fetchUserById = async (id) => {
-  //   try {
-  //     const response = await fetch(`${process.env.REACT_APP_URL}nguoidung/${id}`);
-  //     const data = await response.json();
-  //     if (data.success) {
-  //       setCurrentUser(data.data);
-  //     } else {
-  //       console.error("Failed to fetch user:", data.message);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching user:", error);
-  //   }
-  // };
-
   const handleUpdateUser = async (e) => {
     e.preventDefault();
     try {

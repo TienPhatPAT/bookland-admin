@@ -332,7 +332,7 @@ const TacGia = () => {
               <table>
                 <thead>
                   <tr>
-                    <th>Id</th>
+                    <th>STT</th>
                     <th>Ảnh</th>
                     <th>Tên</th>
                     <th>Tiểu Sử</th>
@@ -341,9 +341,9 @@ const TacGia = () => {
                   </tr>
                 </thead>
                 <tbody id="author-table-body">
-                  {currentAuthors.map((author) => (
+                  {currentAuthors.map((author, index) => (
                     <tr key={author._id}>
-                      <td className={styles.deid}>{author._id}</td>
+                      <td className={styles.deid}>{index + 1}</td>
                       <td>
                         <img src={author.img} alt="" />
                       </td>

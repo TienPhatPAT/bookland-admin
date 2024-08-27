@@ -233,7 +233,7 @@ const BinhLuan = () => {
               <table>
                 <thead>
                   <tr>
-                    <th>Id</th>
+                    <th>STT</th>
                     <th>Tiêu Đề</th>
                     <th>Người Dùng</th>
                     <th>Nội Dung</th>
@@ -242,9 +242,9 @@ const BinhLuan = () => {
                   </tr>
                 </thead>
                 <tbody id="comment-table-body">
-                  {currentComments.map((comment) => (
+                  {currentComments.map((comment, index) => (
                     <tr key={comment._id}>
-                      <td>{comment._id}</td>
+                      <td>{index + 1}</td>
                       <td>{comment?.id_baiviet?.tieude}</td>
                       <td>{comment?.id_nguoidung?.ten}</td>
                       <td> {comment.noidung} </td>
