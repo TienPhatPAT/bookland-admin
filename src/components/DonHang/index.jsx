@@ -77,7 +77,7 @@ const DonHang = () => {
 
     try {
       const response = await fetch(`https://bookland-api.vercel.app/api/order/${idOrder}`, {
-        method: "PUT",
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
